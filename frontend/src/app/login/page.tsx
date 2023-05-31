@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export default function login() {
   return (
-    <section className='flex min-h-screen flex-col items-center justify-between p-24 bg-main-dark'>
+    <section className='flex min-h-screen h-[90vh] flex-col items-center justify-center bg-main-dark'>
       <div className='w-full rounded-lg border max-w-[737px] bg-[#232429] border-[#232429]'>
           <div className='px-14 py-10'>
             <div>
@@ -36,10 +36,10 @@ export default function login() {
                     </button>
               </div>
               <div className='mt-10'>
-                <a href="#" className='text-sm font-medium text-[#0EBDF6] hover:underline'>Forgot your password?</a>
+                <a href="#" className='text-sm text-[#0EBDF6] hover:underline'>Forgot your password?</a>
               </div>
               <div className='mt-5'>
-                <a href="#" className='text-sm font-medium text-[#0EBDF6] hover:underline'>Don't have an account?</a>
+                <a href="#" className='text-sm text-[#0EBDF6] hover:underline'>Don't have an account?</a>
               </div>
             </div>
           </div>
