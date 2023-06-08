@@ -14,6 +14,11 @@ module.exports = {
       },
       colors: {
         'main-dark': '#191B1C',
+        'secondary-dark': '#232429',
+        'accent-1': '#0EBDF6'
+      },
+      fontFamily: {
+        work: ["Work Sans", "sans-serif"],
       },
     },
   },
