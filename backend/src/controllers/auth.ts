@@ -1,5 +1,8 @@
+require('dotenv').config()
+
 const bcrypt = require('bcrypt')
 const responseHandler = require('../handlers/responseHandler');
+const jwt = require('jsonwebtoken')
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -25,25 +28,28 @@ const RegisterUser = async (req: { body: any; }, res: any, next: any) => {
   }
 
   // Create User
-  registerUser(payload.fullname, payload.email, password)
-    .then((newUser) => {
-      console.log('Created user:', newUser);
-    })
-    .catch((error) => {
-      console.error('Error creating user:', error);
-    });
+  try {
+    const newUser = await registerUser(payload.fullname, payload.email, password)
+    const user = {
+      user: newUser.fullname,
+      email: newUser.email,
+    };
 
-  responseHandler(res, 'Successful', 'Registration Successfull.', null)
+    responseHandler(res, 'Successful', 'Log in successful.', user);
+  } catch (error) {
+    console.error('Error registering user:', error);
+    responseHandler(res, 'Error', 'Error registering user.', null);
+  }
+
 }
 
-const LoginUser = async (req: { body: any; }, res: any, next: any) => {
+const LoginUser = async (req: any, res: any, next: any) => {
 
   let payload = req.body
+  const user = { email: payload.email}
 
-  // Hash password
-  const saltRounds = 10;
-  const salt = await bcrypt.genSalt(saltRounds);
-  const password = await bcrypt.hash(payload.password, salt)
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+  res.json({ accessToken: accessToken })
 
   async function loginUser(email : string, password : string) {
     const user = await prisma.user.findUnique({
@@ -56,31 +62,32 @@ const LoginUser = async (req: { body: any; }, res: any, next: any) => {
       throw new Error('User not found');
     }
 
-    bcrypt.compare(payload.password, user.password)
-      .then((match : any) => {
-        if (match) {
-          console.log('Password is correct');
-        } else {
-          throw new Error('Password is incorrect');
-        }
-      })
-      .catch((error: any) => {
-        throw new Error('Invalid password');
-      });
+    bcrypt.compare(password, user.password, (err : any, data : any) => {
+      //if error than throw error
+      if (err) throw err
+      //if both match than you can do anything
+      if (data) {
+        console.log('Success')
+      } else {
+        throw new Error('Passwords dont match')
+      }
+    })
   
     return user;
   }
-  
-  // Create User
-  loginUser(payload.email, password)
-    .then((newUser) => {
-      console.log('Logged in user:', newUser);
-    })
-    .catch((error) => {
-      console.error('Error logging user:', error);
-    });
-    
-  responseHandler(res, 'Successful', 'Log in Successfull.', null)
+  // Login User
+  try {
+    const newUser = await loginUser(payload.email, payload.password);
+    const user = {
+      user: newUser.fullname,
+      email: newUser.email,
+    };
+
+    responseHandler(res, 'Successful', 'Log in successful.', user);
+  } catch (error) {
+    console.error('Error logging user:', error);
+    responseHandler(res, 'Error', 'Error logging user.', null);
+  }
 }
 
 module.exports = {

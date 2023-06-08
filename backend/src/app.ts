@@ -1,5 +1,6 @@
 const express = require('express')
 const routes = require('./routes')
+const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
@@ -10,6 +11,7 @@ const apiPrefix = '/api/v1'
 app.use(express.json());
 app.listen(4000, () => console.log("Server is running on port 4000"));
 
+app.use(cors({ origin: true }))
 app.use(apiPrefix + '/authentication', routes.auth)
 
 async function main() {
