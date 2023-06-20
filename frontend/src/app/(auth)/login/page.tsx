@@ -1,22 +1,35 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import * as auth from '../../../api/user'
+import { ThreeDots  } from  'react-loader-spinner'
+import { signIn } from 'next-auth/react'
 
 export default function login() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false);
+  // useEffect(() => {
+  //   setUser(localStorage.getItem('user') as string)
+  // }, [])
 
   const handleLogin = async (e : any) => {
     e.preventDefault();
 
     try {
-      const response : any = await auth.loginUser({email, password});
-      console.log(response)
+      setLoading(true)
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+        callbackUrl: '/'
+      })
     } catch (error) {
+      console.log(error)
       // Handle any login errors
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -27,7 +40,7 @@ export default function login() {
             <div>
               <Image
               src="/assets/annountr.svg" 
-              width={156}
+              width={70}
               height={66}
               alt="Orienta Logo"
               />
@@ -51,17 +64,28 @@ export default function login() {
                 </div>
               </form>
               <div className='mt-10'>
-                    <button 
-                      onClick={handleLogin}
-                      type='submit' className='w-full text-black bg-[#0EBDF6] rounded-lg p-4 font-semibold text-md'>
-                      Log in
-                    </button>
+                <button 
+                  onClick={handleLogin}
+                  type='submit' className='w-full text-black transition-all hover:border-accent-2 border-2 border-accent-1 bg-accent-1 rounded-lg p-4 font-semibold text-md'>
+                  {loading ?  
+                        <div className='w-full flex items-center justify-center'>
+                          <ThreeDots 
+                            height="20"
+                            width="20"
+                            color="#000000"
+                            radius="9"
+                            ariaLabel="three-dots-loading"
+                            wrapperStyle={{}}
+                            visible={true}
+                          />
+                        </div> : 'Log in'}
+                </button>
               </div>
               <div className='mt-10'>
                 <a href="#" className='text-sm text-[#0EBDF6] hover:underline'>Forgot your password?</a>
               </div>
               <div className='mt-5'>
-                <Link href='/register' className='text-sm text-[#0EBDF6] hover:underline'>Don't have an account?</Link>
+                <Link href='/register' className=' text-sm text-[#0EBDF6] hover:underline'>Don't have an account?</Link>
               </div>
             </div>
           </div>

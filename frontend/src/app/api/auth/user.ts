@@ -3,11 +3,10 @@ import axios from 'axios';
 export const loginUser = async (data : any) => {
   try {
     const response = await axios.post('http://localhost:4000/api/v1/authentication/login', {
-      email: data.credentials.email,
-      password: data.credentials.password
+      email: data.email,
+      password: data.password
     },);
 
-    console.log(response)
     return response
   } catch (error) {
     console.error(error);

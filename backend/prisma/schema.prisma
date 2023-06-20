@@ -8,9 +8,36 @@ datasource db {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model user {
-  id       BigInt  @id @unique @default(autoincrement())
-  fullname String? @db.VarChar
-  email    String? @unique @db.VarChar
-  password String? @db.VarChar
+model User {
+  id            Int        @id @default(autoincrement())
+  fullname      String?
+  email         String     @unique
+  password      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+  announcements Announcement[]
+}
+
+model Announcement {
+  id        Int        @id @default(autoincrement())
+  title     String?
+  desc      String?
+  deadline  Boolean
+  date      DateTime?
+  category  String?   
+  userId    Int        // Foreign key to User model
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

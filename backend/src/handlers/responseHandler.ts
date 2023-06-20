@@ -1,5 +1,5 @@
-const responseHandler = (res : any, title : string, message : string, data : any) => {
-  res.status(200)
+const responseHandler = (res : any, statusCode : number, title : string, message : string, data : any) => {
+  return res.status(statusCode)
       .json({
           status: 'ok',
           title: title,

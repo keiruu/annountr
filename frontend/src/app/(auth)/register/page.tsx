@@ -4,19 +4,29 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ThreeDots  } from  'react-loader-spinner'
-import * as auth from '../../../api/user'
+import * as auth from '@/api/user'
+import type { RootState } from '@/store/store'
+import { setUser } from '@/store/features/auth/authSlice'
+import { useSelector, useDispatch } from 'react-redux';
+import { redirect } from 'next/navigation'
+
 
 export default function register() {
   const [email, setEmail] = useState('');
   const [fullname, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector((state : RootState) => state.auth.user);
+
   
   const handleRegister = async (e : any) => {
     e.preventDefault();
     try {
       setLoading(true)
       const response : any = await auth.registerUser({fullname, email, password});
+      dispatch(setUser(response.data.data.user))
+      redirect('/login')
     } catch (error) {
       // Handle any login errors
     } finally {
@@ -31,7 +41,7 @@ export default function register() {
             <div>
               <Image
               src="/assets/annountr.svg" 
-              width={156}
+              width={70}
               height={66}
               alt="Orienta Logo"
               />
